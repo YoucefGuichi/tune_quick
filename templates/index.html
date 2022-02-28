@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>TAF</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <main>
+    <div class="py-5 text-center">
+      <h2>Welcome to the comparative tool for time series analysis</h2>
+      <p class="lead">
+          this tool helps you to understand your time series data,by providing multiple algorithms
+      </p>
+    </div>
+
+    <div class="row g-5">
+      <div class="col-md-12 col-lg-12">
+        <h4 class="mb-3">TSA</h4>
+        <form class="needs-validation" action="/" , method="POST" enctype="multipart/form-data">
+          <div class="row g-3">
+            <div class="col-sm-6 input files">
+                <label class="form-label" for="customFile">Import your csv file</label>
+                <input name="csv-file" type="file" class="form-control" id="customFile" /> <br>
+                <input type="submit" class="btn btn-outline-primary col-12" id="customFile" />
+
+            </div>
+
+            <div class="col-md-4 choose-algorithme">
+              <label for="state" class="form-label">choose algorithm</label>
+              <select class="form-select" id="state" required>
+                <option value="">Choose...</option>
+                <option>GRU</option>
+                  <option>LSTM</option>
+              </select>
+              <div class="invalid-feedback">
+                Please provide a valid state.
+              </div>
+            </div>
+            <div class="col-12">
+                <label for="email" class="form-label">please wait your file are being processed...</label>
+              <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated col-8" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+</div>
+              <div class="invalid-feedback">
+                  Your username is required.
+                </div>
+              </div>
+            </div>
+
+
+
+          <hr class="my-4">
+<div class="row ">
+            <div class="col-6 LSTM-RESULT">
+                <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+              <script>
+var xValues = [50,60,70,80,90,100,110,120,130,140,150];
+var yValues = [7,8,8,9,9,9,10,11,14,14,15];
+
+new Chart("myChart", {
+  type: "line",
+  data: {
+    labels: xValues,
+    datasets: [{
+      fill: false,
+      lineTension: 0,
+      backgroundColor: "rgba(0,0,255,1.0)",
+      borderColor: "rgba(0,0,255,0.1)",
+      data: yValues
+    }]
+  },
+  options: {
+    legend: {display: false},
+    scales: {
+      yAxes: [{ticks: {min: 6, max:16}}],
+    }
+  }
+});
+</script>
+                <label for="email" class="form-label col-6">LSTM-RESULT</label>
+              <div class="invalid-feedback">
+                Please provide a valid state.
+              </div>
+            </div>
+            <div class="col-6 GRU-RESULTS">
+                <canvas id="myChart2" style="width:100%;max-width:600px"></canvas>
+              <script>
+var xValues = [50,60,70,80,90,100,110,120,130,140,150];
+var yValues = [7,8,8,9,9,9,10,11,14,14,15];
+
+new Chart("myChart2", {
+  type: "line",
+  data: {
+    labels: xValues,
+    datasets: [{
+      fill: false,
+      lineTension: 0,
+      backgroundColor: "rgba(0,0,255,1.0)",
+      borderColor: "rgba(0,0,255,0.1)",
+      data: yValues
+    }]
+  },
+  options: {
+    legend: {display: false},
+    scales: {
+      yAxes: [{ticks: {min: 6, max:16}}],
+    }
+  }
+});
+</script>
+                <label for="email" class="form-label">GRU-RESULT</label>
+              <div class="invalid-feedback">
+                Please provide a valid state.
+              </div>
+            </div>
+</div>
+
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="my-5 pt-5 text-muted text-center text-small">
+    <p class="mb-1">&copy; 2017–2021 Youcef Guichi</p>
+  </footer>
+</div>
+
+
+    <script src="/docs/5.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+      <script src="form-validation.js"></script>
+{% endblock %}
