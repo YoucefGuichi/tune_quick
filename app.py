@@ -3,6 +3,8 @@ import io
 
 import pandas as pd
 from flask import Flask, render_template, request
+from src.models import LSTMPredictor
+from tensorflow.keras import Sequential
 
 app = Flask(__name__)
 
@@ -20,7 +22,18 @@ def index():
 
         # convert the file to a dataframe
         dataset = pd.DataFrame(csv_input)
-        print(dataset)
+        dataset.columns = dataset.iloc[0]
+        dataset = dataset[1:]
+        dataset["Date"]= pd.to_datetime(dataset["Date"])
+        dataset.set_index("Date", inplace=True)
+        dataset.to_csv("test.csv")
+        seq = Sequential()
+        model = LSTMPredictor(dataset, seq)
+        model.clean_dataset()
+        x_train, y_train, test = model.split_data(2016, 2017)
+        model.train(x_train, y_train)
+        predicted_values = model.predict(test)
+        print(predicted_values)
 
         return render_template("index.html")
     else:
