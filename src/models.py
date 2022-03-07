@@ -1,4 +1,3 @@
-# import libraries
 import matplotlib.pyplot as plt
 import mpld3
 import numpy as np
@@ -38,36 +37,26 @@ class Model:
         # Create a new dataframe with only the 'Close column
         self.close_dataframe = self.dataset.filter(['Close'])
         self.close_data_values = self.close_dataframe.values
+
         # Get the number of rows to train the model on
         self.training_data_len = int(np.ceil(len(self.close_data_values) * .95))
         self.scaled_close_data_values = scaler.fit_transform(self.close_data_values)
         train_data = self.scaled_close_data_values[0:int(self.training_data_len), :]
-        # Split the data into x_train and y_train data sets
 
+        # Split the data into x_train and y_train data sets
         for i in range(60, len(train_data)):
             self.x_train.append(train_data[i - 60:i, 0])
             self.y_train.append(train_data[i, 0])
-
-        # Convert the x_train and y_train to numpy arrays
         self.x_train, self.y_train = np.array(self.x_train), np.array(self.y_train)
-
-        # Reshape the data
         self.x_train = np.reshape(self.x_train, (self.x_train.shape[0], self.x_train.shape[1], 1))
 
     def predict(self):
         test_data = self.scaled_close_data_values[self.training_data_len - 60:, :]
-        # Create the data sets x_test and y_test
         self.y_test = self.close_data_values[self.training_data_len:, :]
         for i in range(60, len(test_data)):
             self.x_test.append(test_data[i - 60:i, 0])
-
-        # Convert the data to a numpy array
         x_test = np.array(self.x_test)
-
-        # Reshape the data
         self.x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
-
-        # Get the models predicted price values
         self.predictions = self.sequential.predict(x_test)
         self.predictions = scaler.inverse_transform(self.predictions)
 
