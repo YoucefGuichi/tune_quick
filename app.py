@@ -1,10 +1,10 @@
-import csv
 import io
 
 import pandas as pd
 from flask import Flask, render_template, request
-from src.models import LSTMPredictor
 from tensorflow.keras import Sequential
+
+from src.models import GRUModel
 
 app = Flask(__name__)
 
@@ -13,29 +13,19 @@ app = Flask(__name__)
 def index():
     if request.method == "POST":
         file = request.files["csv-file"]
-        print(file)
+
         if not file:
             return "no file"
-        # read file
-        stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
-        csv_input = csv.reader(stream)
-
-        # convert the file to a dataframe
-        dataset = pd.DataFrame(csv_input)
-        dataset.columns = dataset.iloc[0]
-        dataset = dataset[1:]
-        dataset["Date"]= pd.to_datetime(dataset["Date"])
-        dataset.set_index("Date", inplace=True)
-        dataset.to_csv("test.csv")
+        # read csv file
+        dataset = pd.read_csv(io.StringIO(file.stream.read().decode("UTF8"), newline=None))
         seq = Sequential()
-        model = LSTMPredictor(dataset, seq)
-        model.clean_dataset()
-        x_train, y_train, test = model.split_data(2016, 2017)
-        model.train(x_train, y_train)
-        predicted_values = model.predict(test)
-        print(predicted_values)
-
-        return render_template("index.html")
+        model = GRUModel(dataset, seq)
+        model.clean_and_prepare_dataset()
+        model.split_data()
+        model.train(epochs=1)
+        model.predict()
+        chart = model.plot_predictions("IBM STOCK", "Dates", "Price")
+        return render_template("index.html", bar_chart=chart)
     else:
         return render_template("index.html")
 

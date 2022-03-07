@@ -50,64 +50,21 @@
 
 
           <hr class="my-4">
-<div class="row ">
-            <div class="col-6 LSTM-RESULT">
-                <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
-              <script>
-var xValues = [50,60,70,80,90,100,110,120,130,140,150];
-var yValues = [7,8,8,9,9,9,10,11,14,14,15];
 
-new Chart("myChart", {
-  type: "line",
-  data: {
-    labels: xValues,
-    datasets: [{
-      fill: false,
-      lineTension: 0,
-      backgroundColor: "rgba(0,0,255,1.0)",
-      borderColor: "rgba(0,0,255,0.1)",
-      data: yValues
-    }]
-  },
-  options: {
-    legend: {display: false},
-    scales: {
-      yAxes: [{ticks: {min: 6, max:16}}],
-    }
-  }
-});
-</script>
+<div class="row ">
+            <div class="col-6 LSTM-RESULT" >
+
+
+                {{ bar_chart|safe }}
+
                 <label for="email" class="form-label col-6">LSTM-RESULT</label>
               <div class="invalid-feedback">
                 Please provide a valid state.
               </div>
             </div>
-            <div class="col-6 GRU-RESULTS">
-                <canvas id="myChart2" style="width:100%;max-width:600px"></canvas>
-              <script>
-var xValues = [50,60,70,80,90,100,110,120,130,140,150];
-var yValues = [7,8,8,9,9,9,10,11,14,14,15];
+            <div class="col-6 GRU-RESULTS" >
+ {{ bar_chart|safe }}
 
-new Chart("myChart2", {
-  type: "line",
-  data: {
-    labels: xValues,
-    datasets: [{
-      fill: false,
-      lineTension: 0,
-      backgroundColor: "rgba(0,0,255,1.0)",
-      borderColor: "rgba(0,0,255,0.1)",
-      data: yValues
-    }]
-  },
-  options: {
-    legend: {display: false},
-    scales: {
-      yAxes: [{ticks: {min: 6, max:16}}],
-    }
-  }
-});
-</script>
                 <label for="email" class="form-label">GRU-RESULT</label>
               <div class="invalid-feedback">
                 Please provide a valid state.
@@ -125,7 +82,14 @@ new Chart("myChart2", {
   </footer>
 </div>
 
+<script>
+                    function test(){
+                      var nodes = document.getElementsByClassName("mpld3-figure")[0];
+                       nodes.setAttribute("transform", "scale(1.5)");
+                    }
+                   test();
 
+                </script>
     <script src="/docs/5.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
       <script src="form-validation.js"></script>
