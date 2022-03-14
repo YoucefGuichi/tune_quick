@@ -4,8 +4,10 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.layers import Dense, Dropout, LSTM, GRU
-from tensorflow.keras.optimizers import SGD
+import logging as logger
 
+# configs
+logger.getLogger().setLevel(logger.INFO)
 scaler = MinMaxScaler(feature_range=(0, 1))
 plt.style.use('fivethirtyeight')
 
@@ -31,7 +33,7 @@ class Model:
         self.dataset["Date"] = pd.to_datetime(self.dataset["Date"])
         self.dataset["Date"] = self.dataset["Date"].dt.date
         self.dataset.set_index("Date", inplace=True)
-        print("validation done")
+        logger.info("validation done")
 
     def split_data(self):
         # Create a new dataframe with only the 'Close column
@@ -84,7 +86,8 @@ class GRUModel(Model):
     def __init__(self, dataset, sequential):
         super().__init__(dataset, sequential)
 
-    def train(self, lr=0.01, decay=1e-7, momentum=0.9, nesterov=False, loss='mean_squared_error', epochs=20,
+    # youcef loves you all :)
+    def train(self, optimizer: str, loss='mean_squared_error', epochs=20,
               batch_size=32):
         self.sequential.add(GRU(units=50, return_sequences=True, input_shape=(self.x_train.shape[1], 1),
                                 activation='tanh'))
@@ -98,7 +101,7 @@ class GRUModel(Model):
         self.sequential.add(GRU(units=50, activation='tanh'))
         self.sequential.add(Dropout(0.2))
         self.sequential.add(Dense(units=1))
-        self.sequential.compile(optimizer=SGD(lr=lr, decay=decay, momentum=momentum, nesterov=nesterov),
+        self.sequential.compile(optimizer=optimizer,
                                 loss=loss)
 
         # fitting the model
@@ -110,7 +113,7 @@ class LSTMModel(Model):
     def __init__(self, dataset, sequential):
         super().__init__(dataset, sequential)
 
-    def train(self, optimizer='rmsprop', loss='mean_squared_error', epochs=20, batch_size=32):
+    def train(self, optimizer: str, loss='mean_squared_error', epochs=1, batch_size=32):
         self.sequential.add(LSTM(units=50, return_sequences=True, input_shape=(self.x_train.shape[1], 1)))
         self.sequential.add(Dropout(0.2))
         self.sequential.add(LSTM(units=50, return_sequences=True))
