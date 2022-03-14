@@ -13,7 +13,13 @@ plt.style.use('fivethirtyeight')
 
 
 class Model:
+    """Model is the base class which has common function between the sub models"""
+
     def __init__(self, dataset, sequential):
+        """
+        :param dataset: dataset header must be with the following order (Date,Open,High,Close)
+        :param sequential:
+        """
         self.dataset = dataset
         self.sequential = sequential
         self.x_train = []
@@ -28,6 +34,7 @@ class Model:
         self.close_dataframe = None
 
     def clean_and_prepare_dataset(self):
+        """transfer the data to the correct format"""
         self.dataset.drop_duplicates(inplace=True)
         self.dataset.dropna(inplace=True)
         self.dataset["Date"] = pd.to_datetime(self.dataset["Date"])
@@ -36,6 +43,7 @@ class Model:
         logger.info("validation done")
 
     def split_data(self):
+        """split the data into x_train and y_train and scale it"""
         # Create a new dataframe with only the 'Close column
         self.close_dataframe = self.dataset.filter(['Close'])
         self.close_data_values = self.close_dataframe.values
@@ -53,6 +61,7 @@ class Model:
         self.x_train = np.reshape(self.x_train, (self.x_train.shape[0], self.x_train.shape[1], 1))
 
     def predict(self):
+        """calculate the predictions"""
         test_data = self.scaled_close_data_values[self.training_data_len - 60:, :]
         self.y_test = self.close_data_values[self.training_data_len:, :]
         for i in range(60, len(test_data)):
@@ -63,6 +72,7 @@ class Model:
         self.predictions = scaler.inverse_transform(self.predictions)
 
     def plot_predictions(self, title, x_label, y_label):
+        """plot predictions and convert it to html elements"""
         train = self.close_dataframe[:self.training_data_len]
         valid = self.close_dataframe[self.training_data_len:]
         valid['Predictions'] = self.predictions
@@ -79,6 +89,7 @@ class Model:
         return chart
 
     def calculate_rmse(self):
+        """calculate root mean square error"""
         self.r_mse = np.sqrt(np.mean(((self.predictions - self.y_test) ** 2)))
 
 
@@ -86,7 +97,6 @@ class GRUModel(Model):
     def __init__(self, dataset, sequential):
         super().__init__(dataset, sequential)
 
-    # youcef loves you all :)
     def train(self, optimizer: str, loss='mean_squared_error', epochs=20,
               batch_size=32):
         self.sequential.add(GRU(units=50, return_sequences=True, input_shape=(self.x_train.shape[1], 1),
