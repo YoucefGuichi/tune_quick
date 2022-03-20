@@ -3,29 +3,27 @@ import io
 import logging as logger
 
 import pandas as pd
-from flask import render_template
-
-from src.models import LSTMModel, GRUModel
 from tensorflow.keras import Sequential
 
-# algorithms dict
-algorithms = {
-    'LSTM': LSTMModel,
-    'GRU': GRUModel
-}
+from src.models import LSTMModel, GRUModel
 
 
 class Parser:
 
     def __init__(self, request):
         self.request = request
+        self.chart = None
+        self.algorithmes = {
+            'LSTM': LSTMModel,
+            'GRU': GRUModel
+        }
 
     async def add_model_with_dataset_to_queue(self, queue):
         try:
-            dataset = await pd.read_csv(
-                io.StringIO(self.request.file["csv-file"].stream.read().decode("UTF8"), newline=None))
+            dataset = pd.read_csv(
+                io.StringIO(self.request.files["csv-file"].stream.read().decode("UTF8"), newline=None))
             seq = Sequential()
-            model = algorithms[self.request.form["algorithm"]](dataset, seq)
+            model = self.algorithms[self.request.form["algorithm"]](dataset, seq)
             queue.put_nowait(model)
         except Exception as err:
             raise err
@@ -49,16 +47,12 @@ class Parser:
                 batch_size=int(self.request.form["batch-size"]))
             logger.info('training done')
             model.predict()
-            chart = model.plot_predictions(self.request.form["chart-title"], self.request.form["x-axis"],
-                                           self.request.form["y-axis"])
-            return render_template("index.html", bar_chart=chart)
+            self.chart = model.plot_predictions(self.request.form["chart-title"], self.request.form["x-axis"],
+                                                self.request.form["y-axis"])
 
-        else:
-            return render_template("index.html")
+    async def main(self):
 
-    async def main(self, model):
-
-        queue = asyncio.Queue
+        queue = asyncio.Queue()
         await asyncio.wait([
             self.add_model_with_dataset_to_queue(queue),
             self.run_model(queue)]
