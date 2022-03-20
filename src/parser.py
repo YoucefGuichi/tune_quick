@@ -13,18 +13,19 @@ class Parser:
     def __init__(self, request):
         self.request = request
         self.chart = None
-        self.algorithmes = {
+        self.algorithms = {
             'LSTM': LSTMModel,
             'GRU': GRUModel
         }
 
     async def add_model_with_dataset_to_queue(self, queue):
         try:
-            dataset = pd.read_csv(
-                io.StringIO(self.request.files["csv-file"].stream.read().decode("UTF8"), newline=None))
-            seq = Sequential()
-            model = self.algorithms[self.request.form["algorithm"]](dataset, seq)
-            queue.put_nowait(model)
+            if self.request.method == "POST":
+                dataset = pd.read_csv(
+                    io.StringIO(self.request.files["csv-file"].stream.read().decode("UTF8"), newline=None))
+                seq = Sequential()
+                model = self.algorithms[self.request.form["algorithm"]](dataset, seq)
+                queue.put_nowait(model)
         except Exception as err:
             raise err
 
