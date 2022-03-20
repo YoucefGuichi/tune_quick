@@ -6,6 +6,7 @@ from flask import Flask, render_template, request
 from tensorflow.keras import Sequential
 
 from src.models import GRUModel, LSTMModel
+from src.parser import algorithms
 
 app = Flask(__name__)
 
@@ -30,10 +31,7 @@ def index():
             raise err
 
         seq = Sequential()
-        if algorithm == 'LSTM':
-            model = LSTMModel(dataset, seq)
-        elif algorithm == 'GRU':
-            model = GRUModel(dataset, seq)
+        model = algorithms[algorithm](dataset, seq)
 
         logger.info('cleaning ans preparing the data...')
         try:
