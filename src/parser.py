@@ -58,7 +58,7 @@ class Parser:
 
     async def main(self, model):
 
-        queue = asyncio.LifoQueue()
+        queue = asyncio.Queue
         await asyncio.wait([
             self.add_model_with_dataset_to_queue(queue),
             self.run_model(queue)]
