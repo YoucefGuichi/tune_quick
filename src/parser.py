@@ -54,7 +54,8 @@ class Parser:
     async def main(self):
 
         queue = asyncio.Queue()
-        await asyncio.wait([
-            self.add_model_with_dataset_to_queue(queue),
-            self.run_model(queue)]
+        task1 = asyncio.create_task(self.add_model_with_dataset_to_queue(queue))
+        task2 = asyncio.create_task(self.run_model(queue))
+        await asyncio.gather(*[
+            task1, task2]
         )
