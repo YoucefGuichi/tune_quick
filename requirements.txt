@@ -4,4 +4,5 @@ matplotlib~=3.5.1
 numpy
 scikit-learn~=1.0.2
 gunicorn
-tensorflow==2.5.0
+tensorflow
+mpld3
